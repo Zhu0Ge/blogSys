@@ -1,7 +1,10 @@
 package com.example.controller;
 
+import com.example.dto.CreateArticleRequest;
 import com.example.model.Article;
 import com.example.service.IArticleService;
+
+import jakarta.validation.Valid;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +40,10 @@ public class ArticleController {
 
     // 创建文章
     @PostMapping
-    public Map<String, Object> createArticle(@RequestBody Map<String, String> body) {
+    public Map<String, Object> createArticle(@RequestBody @Valid CreateArticleRequest req) {
         Article article = articleService.createArticle(
-            body.get("title"),
-            body.get("content"),
+            req.title(),
+            req.content(),
             getCurrentUserId()
         );
         return Map.of("message", "Article created", "articleId", article.getId());
@@ -48,11 +51,11 @@ public class ArticleController {
 
     // 更新文章
     @PutMapping("/{id}")
-    public Map<String, String> updateArticle(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+    public Map<String, String> updateArticle(@PathVariable Integer id, @RequestBody @Valid CreateArticleRequest req) {
         articleService.updateArticle(
             id,
-            body.get("title"),
-            body.get("content"),
+            req.title(),
+            req.content(),
             getCurrentUserId()
         );
         return Map.of("message", "Article updated");
