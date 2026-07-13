@@ -20,6 +20,9 @@ public class Comment {
     @Column(name = "user_id", nullable = false)
     private Integer userId;
 
+    @Column(name = "parent_id", nullable = true)
+    private Integer parentId;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -40,6 +43,9 @@ public class Comment {
 
     public Integer getUserId() { return userId; }
     public void setUserId(Integer userId) { this.userId = userId; }
+    
+    public Integer getParentId() { return parentId; }
+    public void setParentId(Integer parentId) { this.parentId = parentId; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

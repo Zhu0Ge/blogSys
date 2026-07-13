@@ -26,10 +26,13 @@ public class CommentController {
     // 发表评论
     @PostMapping
     public Map<String, Object> createComment(@RequestBody Map<String, String> body) {
+        String parentIdStr = body.get("parentId");
+        Integer parentId = parentIdStr != null ? Integer.valueOf(parentIdStr) : null;
         Comment comment = commentService.createComment(
             body.get("content"),
             Integer.valueOf(body.get("articleId")),
-            Integer.valueOf(body.get("userId"))
+            Integer.valueOf(body.get("userId")),
+            parentId
         );
         return Map.of("message", "Comment created", "commentId", comment.getId());
     }

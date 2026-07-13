@@ -7,7 +7,7 @@ import com.example.model.Comment;
 
 public interface ICommentService {
     // 发表评论
-    Comment createComment(String content, Integer articleId, Integer userId);
+    Comment createComment(String content, Integer articleId, Integer userId, Integer parentId);
 
     // 获取某篇文章的所有评论
     List<Map<String, Object>> getArticleComments(Integer articleId);

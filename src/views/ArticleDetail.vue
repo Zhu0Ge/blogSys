@@ -23,16 +23,17 @@
       <!-- 发表评论 -->
       <div class="comment-form">
         <textarea v-model="newComment" placeholder="Write a comment..." rows="3"></textarea>
-        <button @click="handleAddComment" class="btn" :disabled="!newComment.trim()">Post</button>
+        <button @click="handleAddComment(null)" class="btn" :disabled="!newComment.trim()">Post</button>
       </div>
 
-      <!-- 评论列表 -->
-      <div v-for="comment in comments" :key="comment.id" class="comment">
-        <p class="comment-text">{{ comment.content }}</p>
-        <p class="comment-meta">
-          {{ comment.username }} · {{ formatDate(comment.createdAt) }}
-        </p>
-      </div>
+      <!-- 评论列表（递归组件） -->
+      <CommentItem
+        v-for="comment in comments"
+        :key="comment.id"
+        :comment="comment"
+        class="comment"
+        @reply="handleAddComment"
+      />
       <p v-if="comments.length === 0" class="empty">No comments yet.</p>
     </div>
   </div>
@@ -41,6 +42,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import CommentItem from './CommentItem.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -68,26 +70,27 @@ onMounted(async () => {
   }
 })
 
-const handleAddComment = async () => {
+const handleAddComment = async (parentId, content) => {
+  const commentContent = parentId ? content : newComment.value
+  if (!commentContent.trim()) return
+
   const res = await fetch('/api/comments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      content: newComment.value,
+      content: commentContent,
       articleId: parseInt(route.params.id),
-      userId: currentUserId
+      userId: currentUserId,
+      parentId: parentId  // 可以为 null（顶级评论）或数字（回复）
     })
   })
 
   if (res.ok) {
-    const data = await res.json()
-    // 把新评论加到列表最前面
-    comments.value.push({
-      id: data.commentId,
-      content: newComment.value,
-      userId: currentUserId,
-      createdAt: new Date().toISOString()
-    })
+    // 重新获取评论（树形结构刷新）
+    const commentRes = await fetch(`/api/comments/article/${route.params.id}`)
+    if (commentRes.ok) {
+      comments.value = await commentRes.json()
+    }
     newComment.value = ''
   } else {
     alert('Failed to add comment')
