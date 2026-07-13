@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.User;
 import com.example.service.IUserService;
 import org.springframework.web.bind.annotation.*;
+import com.example.util.JwtUtil;
 import java.util.*;
 
 @RestController
@@ -10,9 +11,11 @@ import java.util.*;
 public class UserController {
 
     private final IUserService userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(IUserService userService) {
+    public UserController(IUserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     // POST /api/register
@@ -35,8 +38,12 @@ public class UserController {
 
         User user = userService.loginByEmail(email, password);
 
+        // 生成 JWT token
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+
         return Map.of(
             "message", "Login successful",
+            "token", token,
             "user", Map.of(
                 "id", user.getId(),
                 "username", user.getUsername(),

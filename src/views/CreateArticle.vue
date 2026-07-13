@@ -26,6 +26,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../http.js'
 
 const router = useRouter()
 const title = ref('')
@@ -42,13 +43,12 @@ const handleSubmit = async () => {
 
   submitting.value = true
   try {
-    const res = await fetch('/api/articles', {
+    const res = await api('/api/articles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: title.value,
-        content: content.value,
-        userId: parseInt(userId)
+        content: content.value
       })
     })
     const data = await res.json()

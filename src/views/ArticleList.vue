@@ -28,6 +28,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../http.js'
 
 const router = useRouter()
 const username = ref(localStorage.getItem('username') || 'User')
@@ -35,7 +36,7 @@ const articles = ref([])
 
 onMounted(async () => {
   try {
-    const res = await fetch('/api/articles')
+    const res = await api('/api/articles')
     articles.value = await res.json()
   } catch (e) {
     console.error('Failed to load articles')
@@ -45,6 +46,7 @@ onMounted(async () => {
 const handleLogout = () => {
   localStorage.removeItem('username')
   localStorage.removeItem('userId')
+  localStorage.removeItem('token')
   router.push('/login')
 }
 

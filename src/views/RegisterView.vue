@@ -64,6 +64,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../http.js'
 
 const router = useRouter()
 const username = ref('')
@@ -87,7 +88,7 @@ const handleRegister = async () => {
   }
 
   try {
-    const res = await fetch('/api/register', {
+    const res = await api('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

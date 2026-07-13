@@ -43,6 +43,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import CommentItem from './CommentItem.vue'
+import { api } from '../http.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,14 +58,14 @@ onMounted(async () => {
   const articleId = route.params.id
 
   // 获取文章
-  const articleRes = await fetch(`/api/articles/${articleId}`)
+  const articleRes = await api(`/api/articles/${articleId}`)
   if (articleRes.ok) {
     article.value = await articleRes.json()
     isAuthor.value = article.value.userId === currentUserId
   }
 
   // 获取评论
-  const commentRes = await fetch(`/api/comments/article/${articleId}`)
+  const commentRes = await api(`/api/comments/article/${articleId}`)
   if (commentRes.ok) {
     comments.value = await commentRes.json()
   }
@@ -74,20 +75,19 @@ const handleAddComment = async (parentId, content) => {
   const commentContent = parentId ? content : newComment.value
   if (!commentContent.trim()) return
 
-  const res = await fetch('/api/comments', {
+  const res = await api('/api/comments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       content: commentContent,
       articleId: parseInt(route.params.id),
-      userId: currentUserId,
       parentId: parentId  // 可以为 null（顶级评论）或数字（回复）
     })
   })
 
   if (res.ok) {
     // 重新获取评论（树形结构刷新）
-    const commentRes = await fetch(`/api/comments/article/${route.params.id}`)
+    const commentRes = await api(`/api/comments/article/${route.params.id}`)
     if (commentRes.ok) {
       comments.value = await commentRes.json()
     }
@@ -99,7 +99,7 @@ const handleAddComment = async (parentId, content) => {
 
 const handleDelete = async () => {
   if (!confirm('Delete this article?')) return
-  const res = await fetch(`/api/articles/${article.value.id}?userId=${currentUserId}`, {
+  const res = await api(`/api/articles/${article.value.id}`, {
     method: 'DELETE'
   })
   if (res.ok) {

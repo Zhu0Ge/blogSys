@@ -57,6 +57,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { api } from '../http.js'
 
 const router = useRouter()
 const email = ref('')
@@ -70,7 +71,7 @@ const password = ref('')
 
 const handleLogin = async () => {
   try {
-    const res = await fetch('/api/login', {
+    const res = await api('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -81,6 +82,7 @@ const handleLogin = async () => {
     const data = await res.json()
 
     if (res.ok) {
+      localStorage.setItem('token', data.token)
       localStorage.setItem('username', data.user.username)
       localStorage.setItem('userId', data.user.id)
       router.push('/')

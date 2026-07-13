@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.model.Comment;
 import com.example.service.ICommentService;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,12 @@ public class CommentController {
 
     public CommentController(ICommentService commentService) {
         this.commentService = commentService;
+    }
+
+    // 获取当前登录用户的 ID（从 JWT token 解析出来的）
+    private Integer getCurrentUserId() {
+        return (Integer) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
     }
 
     // 获取某篇文章的评论
@@ -31,7 +38,7 @@ public class CommentController {
         Comment comment = commentService.createComment(
             body.get("content"),
             Integer.valueOf(body.get("articleId")),
-            Integer.valueOf(body.get("userId")),
+            getCurrentUserId(),
             parentId
         );
         return Map.of("message", "Comment created", "commentId", comment.getId());
@@ -39,7 +46,8 @@ public class CommentController {
 
     // 删除评论
     @DeleteMapping("/{id}")
-    public Map<String, String> deleteComment(@PathVariable Integer id, @RequestParam Integer userId) {
+    public Map<String, String> deleteComment(@PathVariable Integer id) {
+        Integer userId = getCurrentUserId();
         commentService.deleteComment(id, userId);
         return Map.of("message", "Comment deleted");
     }

@@ -2,6 +2,8 @@ package com.example.controller;
 
 import com.example.model.Article;
 import com.example.service.IArticleService;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -13,6 +15,12 @@ public class ArticleController {
 
     public ArticleController(IArticleService articleService) {
         this.articleService = articleService;
+    }
+
+    // 获取当前登录用户的 ID（从 JWT token 解析出来的）
+    private Integer getCurrentUserId() {
+        return (Integer) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
     }
 
     // 获取所有文章
@@ -33,7 +41,7 @@ public class ArticleController {
         Article article = articleService.createArticle(
             body.get("title"),
             body.get("content"),
-            Integer.valueOf(body.get("userId"))
+            getCurrentUserId()
         );
         return Map.of("message", "Article created", "articleId", article.getId());
     }
@@ -45,14 +53,15 @@ public class ArticleController {
             id,
             body.get("title"),
             body.get("content"),
-            Integer.valueOf(body.get("userId"))
+            getCurrentUserId()
         );
         return Map.of("message", "Article updated");
     }
 
     // 删除文章
     @DeleteMapping("/{id}")
-    public Map<String, String> deleteArticle(@PathVariable Integer id, @RequestParam Integer userId) {
+    public Map<String, String> deleteArticle(@PathVariable Integer id) {
+        Integer userId = getCurrentUserId();
         articleService.deleteArticle(id, userId);
         return Map.of("message", "Article deleted");
     }
