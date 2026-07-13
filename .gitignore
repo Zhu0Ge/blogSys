@@ -1,0 +1,30 @@
+# Maven build output
+user-api-java/target/
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+
+# IDE - VS Code
+.vscode/
+
+# IDE - Eclipse
+.settings/
+.project
+.classpath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+dist/
+
+# Logs
+*.log
+
+# Environment specific
+**/application.properties
+**/application-local.properties
+**/application-dev.properties
