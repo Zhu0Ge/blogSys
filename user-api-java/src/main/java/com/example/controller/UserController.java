@@ -2,6 +2,8 @@ package com.example.controller;
 
 import com.example.model.User;
 import com.example.service.IUserService;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.example.util.JwtUtil;
 import java.util.*;
@@ -16,6 +18,11 @@ public class UserController {
     public UserController(IUserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.jwtUtil = jwtUtil;
+    }
+
+    private Integer getCurrentUserId() {
+        return (Integer) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
     }
 
     // POST /api/register
@@ -66,6 +73,31 @@ public class UserController {
         Map<String, Object> result = new HashMap<>();
         result.put("code", 200);
         result.put("data", user); // 这里放入 user 对象
+        return result;
+    }
+
+    // PUT /api/profile — 更新个人资料
+    @PutMapping("/profile")
+    public Map<String, Object> updateProfile(@RequestBody Map<String, String> body) {
+        Integer userId = getCurrentUserId();
+        String avatar = body.get("avatar");
+        String bio = body.get("bio");
+        User user = userService.updateProfile(userId, avatar, bio);
+        return Map.of("message", "Profile updated");
+    }
+
+    // GET /api/profile — 获取个人资料
+    @GetMapping("/profile")
+    public Map<String, Object> getProfile() {
+        Integer userId = getCurrentUserId();
+        User user = userService.getUserById(userId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("id", user.getId());
+        result.put("username", user.getUsername());
+        result.put("email", user.getEmail());
+        result.put("avatar", user.getAvatar());
+        result.put("bio", user.getBio());
+        result.put("createdAt", user.getCreatedAt());
         return result;
     }
 }

@@ -13,6 +13,7 @@
       </div>
       <div class="header-right">
         <span>Welcome, {{ username }}</span>
+        <router-link to="/profile" class="btn profile-btn">Profile</router-link>
         <router-link to="/articles/new" class="btn">Write</router-link>
         <button @click="handleLogout" class="btn logout">Logout</button>
       </div>
@@ -99,5 +100,6 @@ const formatDate = (dateStr) => {
 .article-title { font-size: 1.3rem; font-weight: bold; color: #333; text-decoration: none; }
 .article-title:hover { color: #4169E1; }
 .article-meta { color: #888; font-size: 0.9rem; margin-top: 8px; }
+.profile-btn { background: #555; }
 .empty { text-align: center; color: #999; margin-top: 50px; }
 </style>

@@ -1,6 +1,6 @@
 package com.example.config;
 
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse; 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,6 +27,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // 放行预检请求
                 .requestMatchers("/api/login", "/api/register").permitAll()  // 登录注册不需要认证
+                .requestMatchers("/api/upload/avatar/**").permitAll()  // 头像图片不需要认证
                 .anyRequest().authenticated()  // 其他所有接口需要 token
             )
             .exceptionHandling(exceptions -> exceptions

@@ -24,6 +24,9 @@ dist/
 # Logs
 *.log
 
+# Uploaded images
+**/uploads/
+
 # Environment specific
 **/application.properties
 **/application-local.properties

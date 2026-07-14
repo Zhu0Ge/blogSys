@@ -51,4 +51,12 @@ public class UserServiceImpl implements IUserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+
+    // 更新个人资料
+    public User updateProfile(Integer userId, String avatar, String bio) {
+        User user = getUserById(userId);
+        if (avatar != null) user.setAvatar(avatar);
+        if (bio != null) user.setBio(bio);
+        return userRepository.save(user);
+    }
 }

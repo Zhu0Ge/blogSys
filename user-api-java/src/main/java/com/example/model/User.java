@@ -20,6 +20,12 @@ public class User {
     @Column(nullable = false, length = 255)
     private String password;
 
+    @Column(length = 500)
+    private String avatar;  // 头像 URL
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;     // 个人简介
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -49,6 +55,12 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+    
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
