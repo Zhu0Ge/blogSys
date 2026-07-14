@@ -10,11 +10,11 @@ public class ArticleDTO {
     private String username;
     private LocalDateTime createdAt;
 
-    public ArticleDTO(Article article, String username) {
+    public ArticleDTO(Article article) {
         this.id = article.getId();
         this.title = article.getTitle();
         this.content = article.getContent();
-        this.username = username;
+        getUsername();
         this.createdAt = article.getCreatedAt();
     }
 

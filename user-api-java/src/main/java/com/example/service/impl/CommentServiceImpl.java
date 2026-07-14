@@ -1,5 +1,6 @@
 package com.example.service.impl;
 
+import com.example.model.Article;
 import com.example.model.Comment;
 import com.example.dto.CommentDTO;
 import com.example.common.R;
@@ -10,9 +11,8 @@ import com.example.service.ICommentService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 @Service
 public class CommentServiceImpl implements ICommentService {
@@ -29,13 +29,18 @@ public class CommentServiceImpl implements ICommentService {
     public R<CommentDTO> createComment(String content, Integer articleId, Integer userId, Integer parentId) {
         Comment comment = new Comment();
         comment.setContent(content);
-        comment.setArticleId(articleId);
+
+        Article article = new Article();
+        article.setId(articleId);
+        comment.setArticle(article);
         comment.setParentId(parentId);
-        comment.setUserId(userId);
+
+        User user = new User();
+        user.setId(userId);
+        comment.setUser(user);
         Comment savedComment = commentRepository.save(comment);
-        String username = userRepository.findById(savedComment.getUserId())
-                .map(User::getUsername)
-                .orElse("Unknown");
+        String username = userRepository.findById(userId)
+        .map(User::getUsername).orElse("Unknown");
         return R.success(new CommentDTO(savedComment.getId(), savedComment.getContent(), 
             username,savedComment.getCreatedAt(),new ArrayList<>()));
     }
@@ -52,9 +57,7 @@ public class CommentServiceImpl implements ICommentService {
 
     private CommentDTO toCommentDTO(Comment comment) {
         //查用户名
-        String username = userRepository.findById(comment.getUserId())
-                .map(User::getUsername)
-                .orElse("Unknown");
+        String username = comment.getUser().getUsername();
         //查这个评论的所有回复
         List<Comment> replies = commentRepository.findByParentIdOrderByCreatedAtAsc(comment.getId());
         List<CommentDTO> replyList = new ArrayList<>();
@@ -69,7 +72,7 @@ public class CommentServiceImpl implements ICommentService {
     public R<Void> deleteComment(Integer id, Integer userId) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
-        if (!comment.getUserId().equals(userId)) {
+        if (!comment.getUser().getId().equals(userId)) {
             throw new RuntimeException("You can only delete your own comments");
         }
         commentRepository.delete(comment);

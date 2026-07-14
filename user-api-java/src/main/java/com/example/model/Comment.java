@@ -14,11 +14,13 @@ public class Comment {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "article_id", nullable = false)
-    private Integer articleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id", nullable = false)
+    private Article article;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "parent_id", nullable = true)
     private Integer parentId;
@@ -38,11 +40,11 @@ public class Comment {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public Integer getArticleId() { return articleId; }
-    public void setArticleId(Integer articleId) { this.articleId = articleId; }
+    public Article getArticle() { return article; }
+    public void setArticle(Article article) { this.article = article; }
 
-    public Integer getUserId() { return userId; }
-    public void setUserId(Integer userId) { this.userId = userId; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
     
     public Integer getParentId() { return parentId; }
     public void setParentId(Integer parentId) { this.parentId = parentId; }

@@ -27,10 +27,8 @@ dist/
 # Uploaded images
 **/uploads/
 
-# Claude
-.claude/
-
 # Environment specific
 **/application.properties
 **/application-local.properties
 **/application-dev.properties
+.claude/
