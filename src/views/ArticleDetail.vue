@@ -4,6 +4,7 @@
     <div class="header">
       <router-link to="/" class="back-link">← Back</router-link>
       <div v-if="isAuthor" class="header-actions">
+        <router-link :to="`/articles/${article.id}/edit`" class="btn">Edit</router-link>
         <button @click="handleDelete" class="btn danger">Delete</button>
       </div>
     </div>
