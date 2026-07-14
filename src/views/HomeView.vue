@@ -22,9 +22,8 @@ onMounted(async () => {
   const userId = localStorage.getItem('userId')
   if (userId) {
     try {
-      const res = await fetch(`/api/users/${userId}`)
-      const data = await res.json()
-      username.value = data.user.username
+      const data = await fetch(`/api/users/${userId}`)
+      username.value = data.username
     } catch {
       // 后端连不上时，fallback 到 localStorage
       username.value = localStorage.getItem('username') || 'User'

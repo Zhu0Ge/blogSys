@@ -64,32 +64,29 @@ const bio = ref('')
 const saving = ref(false)
 
 onMounted(async () => {
-  const res = await api('/api/profile')
-  if (res.ok) {
-    const data = await res.json()
-    username.value = data.username
-    email.value = data.email
-    avatar.value = data.avatar || ''
-    avatarInput.value = data.avatar || ''
-    bio.value = data.bio || ''
-  }
+  const data = await api('/api/profile')
+  username.value = data.username
+  email.value = data.email
+  avatar.value = data.avatar || ''
+  avatarInput.value = data.avatar || ''
+  bio.value = data.bio || '' 
 })
 
 const handleSave = async () => {
   saving.value = true
-  const res = await api('/api/profile', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      avatar: avatarInput.value,
-      bio: bio.value
+  try{
+    const data = await api('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        avatar: avatarInput.value,
+        bio: bio.value
+      })
     })
-  })
-  if (res.ok) {
     avatar.value = avatarInput.value
     alert('Profile updated!')
-  } else {
-    alert('Failed to update profile')
+  } catch (error) {
+    alert(error.message || 'Failed to update profile')
   }
   saving.value = false
 }
@@ -105,18 +102,17 @@ const handleFileUpload = async (e) => {
   formData.append('file', file)
 
   const token = localStorage.getItem('token')
-  const res = await fetch('/api/upload/avatar', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${token}` },
-    body: formData
-  })
-
-  if (res.ok) {
+  try {
+    const res = await fetch('/api/upload/avatar', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    })
     const data = await res.json()
     avatar.value = data.url        // 立即显示新头像
     avatarInput.value = data.url   // 同步到输入框（保存时提交）
-  } else {
-    alert('Upload failed')
+  } catch (error) {
+    alert(error.message || 'Failed to upload avatar')
   }
   uploading.value = false
   // 清空 input，允许重复选择同一个文件

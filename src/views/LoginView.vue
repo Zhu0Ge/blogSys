@@ -71,7 +71,7 @@ const password = ref('')
 
 const handleLogin = async () => {
   try {
-    const res = await api('/api/login', {
+    const data = await api('/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -79,18 +79,15 @@ const handleLogin = async () => {
         password: password.value
       })
     })
-    const data = await res.json()
 
-    if (res.ok) {
-      localStorage.setItem('token', data.token)
-      localStorage.setItem('username', data.user.username)
-      localStorage.setItem('userId', data.user.id)
-      router.push('/')
-    } else {
-      alert(data.message)
-    }
+
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('username', data.user?.username)
+    localStorage.setItem('userId', data.user?.id)
+    router.push('/')
+
   } catch (error) {
-    alert('无法连接到服务器')
+    alert(error.message || '无法连接到服务器')
   }
 }
 </script>

@@ -1,17 +1,17 @@
 package com.example.service;
 
 import java.util.List;
-import java.util.Map;
 
-import com.example.model.Comment;
+import com.example.dto.CommentDTO;
+import com.example.common.R;
 
 public interface ICommentService {
     // 发表评论
-    Comment createComment(String content, Integer articleId, Integer userId, Integer parentId);
+    R<CommentDTO> createComment(String content, Integer articleId, Integer userId, Integer parentId);
 
     // 获取某篇文章的所有评论
-    List<Map<String, Object>> getArticleComments(Integer articleId);
+    R<List<CommentDTO>> getArticleComments(Integer articleId);
 
     // 删除评论（只允许评论者删除）
-    void deleteComment(Integer id, Integer userId);
+    R<Void> deleteComment(Integer id, Integer userId);  
 }

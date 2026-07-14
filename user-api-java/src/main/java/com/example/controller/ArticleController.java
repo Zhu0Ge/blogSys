@@ -1,7 +1,8 @@
 package com.example.controller;
 
+import com.example.common.R;
 import com.example.dto.CreateArticleRequest;
-import com.example.model.Article;
+import com.example.dto.ArticleDTO;
 import com.example.service.IArticleService;
 
 import jakarta.validation.Valid;
@@ -28,56 +29,50 @@ public class ArticleController {
 
     // 获取所有文章
     @GetMapping
-    public List<Map<String, Object>> getAllArticles() {
-        return articleService.getAllArticles();
+    public R<List<ArticleDTO>> getAllArticles() {
+        return articleService.getAllArticles();  // getAllArticles 返回 List<ArticleDTO>
     }
 
     // 搜索文章
     @GetMapping("/search")
-    public List<Map<String, Object>> searchArticles(@RequestParam String q) {
+    public R<List<ArticleDTO>> searchArticles(@RequestParam String q) {
         return articleService.searchArticles(q);
     }
 
     // 获取单篇文章
     @GetMapping("/{id}")
-    public Article getArticle(@PathVariable Integer id) {
-        return articleService.getArticleById(id);
+    public R<ArticleDTO> getArticle(@PathVariable Integer id) {
+        return articleService.getArticleById(id);  // 返回 ArticleDTO
     }
 
     // 创建文章
     @PostMapping
-    public Map<String, Object> createArticle(@RequestBody @Valid CreateArticleRequest req) {
-        Article article = articleService.createArticle(
-            req.title(),
-            req.content(),
-            getCurrentUserId()
-        );
-        return Map.of("message", "Article created", "articleId", article.getId());
+    public R<ArticleDTO> createArticle(@RequestBody @Valid CreateArticleRequest req) {
+        return articleService.createArticle(req.title(), req.content(), getCurrentUserId());
     }
 
     // 更新文章
     @PutMapping("/{id}")
-    public Map<String, String> updateArticle(@PathVariable Integer id, @RequestBody @Valid CreateArticleRequest req) {
+    public R<String> updateArticle(@PathVariable Integer id, @RequestBody @Valid CreateArticleRequest req) {
         articleService.updateArticle(
             id,
             req.title(),
             req.content(),
             getCurrentUserId()
         );
-        return Map.of("message", "Article updated");
+        return R.success("Article updated");
     }
 
     // 删除文章
     @DeleteMapping("/{id}")
-    public Map<String, String> deleteArticle(@PathVariable Integer id) {
-        Integer userId = getCurrentUserId();
-        articleService.deleteArticle(id, userId);
-        return Map.of("message", "Article deleted");
+    public R<String> deleteArticle(@PathVariable Integer id) {
+        articleService.deleteArticle(id, getCurrentUserId());
+        return R.success("Article deleted");
     }
 
     // 获取某个用户的所有文章
     @GetMapping("/user/{userId}")
-    public List<Article> getUserArticles(@PathVariable Integer userId) {
+    public R<List<ArticleDTO>> getUserArticles(@PathVariable Integer userId) {
         return articleService.getUserArticles(userId);
     }
 }

@@ -39,9 +39,9 @@ const loading = ref(true)
 
 onMounted(async () => {
   // 加载文章数据
-  const res = await api(`/api/articles/${articleId}`)
-  if (res.ok) {
-    const article = await res.json()
+  const data = await api(`/api/articles/${articleId}`)
+  try {
+    const article = data
     // 检查是否是作者
     const currentUserId = parseInt(localStorage.getItem('userId'))
     if (article.userId !== currentUserId) {
@@ -51,8 +51,8 @@ onMounted(async () => {
     }
     title.value = article.title
     content.value = article.content
-  } else {
-    alert('Failed to load article')
+  } catch (error) {
+    alert(error.message || 'Failed to load article')
     router.push('/')
   }
   loading.value = false
@@ -61,7 +61,7 @@ onMounted(async () => {
 const handleSubmit = async () => {
   submitting.value = true
   try {
-    const res = await api(`/api/articles/${articleId}`, {
+    const data = await api(`/api/articles/${articleId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -69,15 +69,9 @@ const handleSubmit = async () => {
         content: content.value
       })
     })
-    const data = await res.json()
-
-    if (res.ok) {
-      router.push(`/articles/${articleId}`)
-    } else {
-      alert(data.message)
-    }
-  } catch (e) {
-    alert('Failed to update article')
+    router.push(`/articles/${articleId}`)
+  } catch (error) {
+    alert(error.message || 'Failed to update article')
   } finally {
     submitting.value = false
   }

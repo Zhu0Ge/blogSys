@@ -1,6 +1,8 @@
 package com.example.service.impl;
 
 import com.example.model.User;
+import com.example.dto.UserVO;
+import com.example.common.R;
 import com.example.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     // 注册
-    public User register(String username, String email, String password) {
+    public R<UserVO> register(String username, String email, String password) {
         // 检查用户名是否已存在
         if (userRepository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -31,11 +33,11 @@ public class UserServiceImpl implements IUserService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
 
-        return userRepository.save(user);
+        return R.success(new UserVO(userRepository.save(user)));
     }
 
     // 登录（用邮箱）
-    public User loginByEmail(String email, String password) {
+    public R<UserVO> loginByEmail(String email, String password) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
@@ -43,20 +45,20 @@ public class UserServiceImpl implements IUserService {
             throw new RuntimeException("Invalid email or password");
         }
 
-        return user;
+        return R.success(new UserVO(user));
     }
 
     // 按 ID 查询
-    public User getUserById(Integer id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public R<UserVO> getUserById(Integer id) {
+        return R.success(new UserVO(userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"))));
     }
 
     // 更新个人资料
-    public User updateProfile(Integer userId, String avatar, String bio) {
-        User user = getUserById(userId);
+    public R<UserVO> updateProfile(Integer userId, String avatar, String bio) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         if (avatar != null) user.setAvatar(avatar);
         if (bio != null) user.setBio(bio);
-        return userRepository.save(user);
+        return R.success(new UserVO(userRepository.save(user)));
     }
 }

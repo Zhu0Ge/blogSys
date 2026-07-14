@@ -88,7 +88,7 @@ const handleRegister = async () => {
   }
 
   try {
-    const res = await api('/api/register', {
+    const data = await api('/api/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -97,16 +97,11 @@ const handleRegister = async () => {
         password: password.value
       })
     })
-    const data = await res.json()
 
-    if (res.ok) {
-      alert('Registration successful! Please login.')
-      router.push('/login')
-    } else {
-      alert(data.message)
-    }
-  } catch (error) {
-    alert('无法连接到服务器')
+    alert('Registration successful! Please login.')
+    router.push('/login')
+    } catch (error) {
+    alert(error.message || 'Registration failed')
   }
 }
 </script>

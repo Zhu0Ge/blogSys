@@ -43,7 +43,7 @@ const handleSubmit = async () => {
 
   submitting.value = true
   try {
-    const res = await api('/api/articles', {
+    const data = await api('/api/articles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -51,15 +51,9 @@ const handleSubmit = async () => {
         content: content.value
       })
     })
-    const data = await res.json()
-
-    if (res.ok) {
-      router.push('/')
-    } else {
-      alert(data.message)
-    }
-  } catch (e) {
-    alert('Failed to publish article')
+    router.push('/')
+  } catch (error) {
+    alert(error.message || 'Failed to publish article')
   } finally {
     submitting.value = false
   }

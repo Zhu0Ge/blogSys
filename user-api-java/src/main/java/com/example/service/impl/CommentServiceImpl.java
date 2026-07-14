@@ -1,6 +1,8 @@
 package com.example.service.impl;
 
 import com.example.model.Comment;
+import com.example.dto.CommentDTO;
+import com.example.common.R;
 import com.example.model.User;
 import com.example.repository.CommentRepository;
 import com.example.repository.UserRepository;
@@ -24,56 +26,53 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     // 发表评论
-    public Comment createComment(String content, Integer articleId, Integer userId, Integer parentId) {
+    public R<CommentDTO> createComment(String content, Integer articleId, Integer userId, Integer parentId) {
         Comment comment = new Comment();
         comment.setContent(content);
         comment.setArticleId(articleId);
         comment.setParentId(parentId);
         comment.setUserId(userId);
-        return commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
+        String username = userRepository.findById(savedComment.getUserId())
+                .map(User::getUsername)
+                .orElse("Unknown");
+        return R.success(new CommentDTO(savedComment.getId(), savedComment.getContent(), 
+            username,savedComment.getCreatedAt(),new ArrayList<>()));
     }
 
     // 获取某篇文章的所有父评论
-    public List<Map<String, Object>> getArticleComments(Integer articleId) {
+    public R<List<CommentDTO>> getArticleComments(Integer articleId) {
         List<Comment> comments = commentRepository.findByArticleIdAndParentIdIsNullOrderByCreatedAtAsc(articleId);
-        List<Map<String, Object>> articleComments = new ArrayList<>();
+        List<CommentDTO> articleComments = new ArrayList<>();
         for (Comment comment : comments) {
-            articleComments.add(commentToMap(comment));
+            articleComments.add(toCommentDTO(comment));
         }
-        return articleComments;
+        return R.success(articleComments);
     }
 
-    private Map<String, Object> commentToMap(Comment comment) {
-        Map<String, Object> item = new HashMap<>();
-        item.put("id", comment.getId());
-        item.put("content", comment.getContent());
-        item.put("articleId", comment.getArticleId());
-        item.put("userId", comment.getUserId());
-        item.put("createdAt", comment.getCreatedAt());
-
+    private CommentDTO toCommentDTO(Comment comment) {
         //查用户名
         String username = userRepository.findById(comment.getUserId())
                 .map(User::getUsername)
                 .orElse("Unknown");
-        item.put("username", username);
-
         //查这个评论的所有回复
         List<Comment> replies = commentRepository.findByParentIdOrderByCreatedAtAsc(comment.getId());
-        List<Map<String, Object>> replyList = new ArrayList<>();
+        List<CommentDTO> replyList = new ArrayList<>();
         for (Comment reply : replies) {
-            replyList.add(commentToMap(reply));
+            replyList.add(toCommentDTO(reply));
         }
-        item.put("replies", replyList);
-        return item;
+        return new CommentDTO(comment.getId(), comment.getContent(), 
+            username,comment.getCreatedAt(),replyList);
     }
 
     // 删除评论（只允许评论者删除）
-    public void deleteComment(Integer id, Integer userId) {
+    public R<Void> deleteComment(Integer id, Integer userId) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
         if (!comment.getUserId().equals(userId)) {
             throw new RuntimeException("You can only delete your own comments");
         }
         commentRepository.delete(comment);
+        return R.success(null);
     }
 }

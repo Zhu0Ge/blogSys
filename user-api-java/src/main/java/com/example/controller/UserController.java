@@ -1,6 +1,7 @@
 package com.example.controller;
 
-import com.example.model.User;
+import com.example.common.R;
+import com.example.dto.UserVO;
 import com.example.service.IUserService;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,77 +28,48 @@ public class UserController {
 
     // POST /api/register
     @PostMapping("/register")
-    public Map<String, Object> register(@RequestBody Map<String, String> body) {
+    public R<UserVO> register(@RequestBody Map<String, String> body) {
         String username = body.get("username");
         String email = body.get("email");
         String password = body.get("password");
 
-        User user = userService.register(username, email, password);
-
-        return Map.of("message", "Registration successful", "userId", user.getId());
+        return userService.register(username, email, password);
     }
 
     // POST /api/login
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body) {
+    public R<Map<String, Object>> login(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String password = body.get("password");
 
-        User user = userService.loginByEmail(email, password);
+        R<UserVO> userVO = userService.loginByEmail(email, password);
 
         // 生成 JWT token
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+        String token = jwtUtil.generateToken(userVO.getData().getId(), userVO.getData().getUsername());
 
-        return Map.of(
-            "message", "Login successful",
-            "token", token,
-            "user", Map.of(
-                "id", user.getId(),
-                "username", user.getUsername(),
-                "createdAt", user.getCreatedAt()
-            )
-        );
+        return R.success(Map.of("token", token, "user", userVO.getData()));
     }
 
     // GET /api/users/:userId
     @GetMapping("/users/{userId}")
-    public Map<String, Object> getUserById(@PathVariable Integer userId) {
-        User user = userService.getUserById(userId);
-
-        // 1. 先检查 user 是否存在
-        if (user == null) {
-            return Map.of("code", 404, "msg", "用户不存在");
-        }
-
-        // 2. 使用 HashMap 构建返回结果，它允许 value 为 null（虽然最好也不为 null）
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", 200);
-        result.put("data", user); // 这里放入 user 对象
-        return result;
+    public R<UserVO> getUserById(@PathVariable Integer userId) {
+        return userService.getUserById(userId);
     }
 
     // PUT /api/profile — 更新个人资料
     @PutMapping("/profile")
-    public Map<String, Object> updateProfile(@RequestBody Map<String, String> body) {
+    public R<String> updateProfile(@RequestBody Map<String, String> body) {
         Integer userId = getCurrentUserId();
         String avatar = body.get("avatar");
         String bio = body.get("bio");
-        User user = userService.updateProfile(userId, avatar, bio);
-        return Map.of("message", "Profile updated");
+        userService.updateProfile(userId, avatar, bio);
+        return R.success("Profile updated");
     }
 
     // GET /api/profile — 获取个人资料
     @GetMapping("/profile")
-    public Map<String, Object> getProfile() {
-        Integer userId = getCurrentUserId();
-        User user = userService.getUserById(userId);
-        Map<String, Object> result = new HashMap<>();
-        result.put("id", user.getId());
-        result.put("username", user.getUsername());
-        result.put("email", user.getEmail());
-        result.put("avatar", user.getAvatar());
-        result.put("bio", user.getBio());
-        result.put("createdAt", user.getCreatedAt());
-        return result;
+    public R<UserVO> getProfile() {
+        return userService.getUserById(getCurrentUserId());
+    
     }
 }

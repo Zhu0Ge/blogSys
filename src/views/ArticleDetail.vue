@@ -59,24 +59,23 @@ onMounted(async () => {
   const articleId = route.params.id
 
   // 获取文章
-  const articleRes = await api(`/api/articles/${articleId}`)
-  if (articleRes.ok) {
-    article.value = await articleRes.json()
-    isAuthor.value = article.value.userId === currentUserId
-  }
+  const data = await api(`/api/articles/${articleId}`)
+
+  article.value = data
+  isAuthor.value = article.value.userId === currentUserId
+
 
   // 获取评论
   const commentRes = await api(`/api/comments/article/${articleId}`)
-  if (commentRes.ok) {
-    comments.value = await commentRes.json()
-  }
+  comments.value = commentRes
+
 })
 
 const handleAddComment = async (parentId, content) => {
   const commentContent = parentId ? content : newComment.value
   if (!commentContent.trim()) return
 
-  const res = await api('/api/comments', {
+  const data = await api('/api/comments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -86,27 +85,28 @@ const handleAddComment = async (parentId, content) => {
     })
   })
 
-  if (res.ok) {
+  try {
     // 重新获取评论（树形结构刷新）
     const commentRes = await api(`/api/comments/article/${route.params.id}`)
-    if (commentRes.ok) {
-      comments.value = await commentRes.json()
-    }
+
+    comments.value = commentRes
     newComment.value = ''
-  } else {
-    alert('Failed to add comment')
+  } catch (error) {
+    alert(error.message || 'Failed to add comment')
   }
+
 }
 
 const handleDelete = async () => {
   if (!confirm('Delete this article?')) return
-  const res = await api(`/api/articles/${article.value.id}`, {
-    method: 'DELETE'
-  })
-  if (res.ok) {
-    router.push('/')
-  } else {
-    alert('Failed to delete')
+  try 
+  {
+      const res = await api(`/api/articles/${article.value.id}`, {
+        method: 'DELETE'
+      })
+      router.push('/')
+  } catch (error) {
+    alert(error.message || 'Failed to delete')
   }
 }
 

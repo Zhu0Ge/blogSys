@@ -27,5 +27,10 @@ export async function api(url, options = {}) {
     throw new Error('Unauthorized')
   }
 
-  return res
+  const body = await res.json()
+
+  if(body.code == 200){
+    return body.data
+  }
+  throw new Error(body.msg || 'Request failed')
 }

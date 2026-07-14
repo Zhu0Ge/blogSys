@@ -45,10 +45,9 @@ const articles = ref([])
 
 
 const loadArticles = async () => {
-  const res = await api('/api/articles')
-  if (res.ok) {
-    articles.value = await res.json()
-  }
+  const data = await api('/api/articles')
+  articles.value = data
+
 }
 
 onMounted(loadArticles)
@@ -64,10 +63,10 @@ const handleSearch = () => {
       loadArticles()  // 清空搜索时加载全部
       return
     }
-    const res = await api(`/api/articles/search?q=${encodeURIComponent(searchQuery.value)}`)
-    if (res.ok) {
-      articles.value = await res.json()
-    }
+    const data = await api(`/api/articles/search?q=${encodeURIComponent(searchQuery.value)}`)
+
+    articles.value = data
+    
   }, 300)  // 防抖 300ms，防止每输入一个字就发请求
 }
 
