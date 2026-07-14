@@ -20,4 +20,7 @@ public interface IArticleService {
 
     // 删除文章（只允许作者删除）
     void deleteArticle(Integer id, Integer userId);
+
+    // 搜索文章（按标题模糊匹配）
+    List<Map<String, Object>> searchArticles(String keyword);
 }

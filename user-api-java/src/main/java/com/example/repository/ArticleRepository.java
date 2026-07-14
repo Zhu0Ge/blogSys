@@ -10,4 +10,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 
     // 查询所有文章，按时间倒序
     List<Article> findAllByOrderByCreatedAtDesc();
+
+    // 按标题模糊搜索（不区分大小写），按时间倒序
+    List<Article> findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(String keyword);
 }

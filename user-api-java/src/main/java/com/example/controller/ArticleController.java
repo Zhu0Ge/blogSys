@@ -32,6 +32,12 @@ public class ArticleController {
         return articleService.getAllArticles();
     }
 
+    // 搜索文章
+    @GetMapping("/search")
+    public List<Map<String, Object>> searchArticles(@RequestParam String q) {
+        return articleService.searchArticles(q);
+    }
+
     // 获取单篇文章
     @GetMapping("/{id}")
     public Article getArticle(@PathVariable Integer id) {

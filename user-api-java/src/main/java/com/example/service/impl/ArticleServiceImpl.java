@@ -84,4 +84,26 @@ public class ArticleServiceImpl implements IArticleService {
         }
         articleRepository.delete(article);
     }
+
+    public List<Map<String, Object>> searchArticles(String keyword) {
+        List<Article> articles = articleRepository
+            .findByTitleContainingIgnoreCaseOrderByCreatedAtDesc(keyword);
+        
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Article article : articles) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", article.getId());
+            item.put("title", article.getTitle());
+            item.put("content", article.getContent());
+            item.put("userId", article.getUserId());
+            item.put("createdAt", article.getCreatedAt());
+            
+            String username = userRepository.findById(article.getUserId())
+                    .map(User::getUsername)
+                    .orElse("Unknown");
+            item.put("username", username);
+            result.add(item);
+        }
+        return result;
+    }
 }

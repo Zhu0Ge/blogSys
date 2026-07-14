@@ -3,6 +3,14 @@
     <!-- 顶部导航栏 -->
     <div class="header">
       <h1>Blog</h1>
+      <div class="search-bar">
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          placeholder="Search articles..."
+          @input="handleSearch"
+        >
+      </div>
       <div class="header-right">
         <span>Welcome, {{ username }}</span>
         <router-link to="/articles/new" class="btn">Write</router-link>
@@ -34,14 +42,33 @@ const router = useRouter()
 const username = ref(localStorage.getItem('username') || 'User')
 const articles = ref([])
 
-onMounted(async () => {
-  try {
-    const res = await api('/api/articles')
+
+const loadArticles = async () => {
+  const res = await api('/api/articles')
+  if (res.ok) {
     articles.value = await res.json()
-  } catch (e) {
-    console.error('Failed to load articles')
   }
-})
+}
+
+onMounted(loadArticles)
+
+
+const searchQuery = ref('')
+let searchTimer = null
+
+const handleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(async () => {
+    if (!searchQuery.value.trim()) {
+      loadArticles()  // 清空搜索时加载全部
+      return
+    }
+    const res = await api(`/api/articles/search?q=${encodeURIComponent(searchQuery.value)}`)
+    if (res.ok) {
+      articles.value = await res.json()
+    }
+  }, 300)  // 防抖 300ms，防止每输入一个字就发请求
+}
 
 const handleLogout = () => {
   localStorage.removeItem('username')
