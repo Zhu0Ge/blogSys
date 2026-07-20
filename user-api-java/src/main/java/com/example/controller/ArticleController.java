@@ -27,6 +27,14 @@ public class ArticleController {
                 .getAuthentication().getPrincipal();
     }
 
+    // 分页查询文章
+    @GetMapping("/paged")
+    public R<Map<String, Object>> getArticlesPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return articleService.getArticlesPaged(page, size);
+    }
+
     // 获取所有文章
     @GetMapping
     public R<List<ArticleDTO>> getAllArticles() {

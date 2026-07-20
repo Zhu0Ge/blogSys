@@ -14,7 +14,7 @@ public class ArticleDTO {
         this.id = article.getId();
         this.title = article.getTitle();
         this.content = article.getContent();
-        getUsername();
+        this.username = article.getUser().getUsername();
         this.createdAt = article.getCreatedAt();
     }
 

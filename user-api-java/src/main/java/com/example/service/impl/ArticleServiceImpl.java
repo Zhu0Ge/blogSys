@@ -4,10 +4,14 @@ import com.example.model.Article;
 import com.example.dto.ArticleDTO;
 import com.example.model.User;
 import com.example.repository.ArticleRepository;
-import com.example.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import com.example.service.IArticleService;
 import com.example.common.R;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.*;
 
@@ -27,7 +31,15 @@ public class ArticleServiceImpl implements IArticleService {
         Article article = new Article();
         article.setTitle(title);
         article.setContent(content);
-        return R.success(new ArticleDTO(articleRepository.save(article)));
+
+        User user = new User();
+        user.setId(userId);
+        article.setUser(user);
+
+        Article saved = articleRepository.save(article);
+        Article fresh = articleRepository.findById(saved.getId()).orElseThrow();
+
+        return R.success(new ArticleDTO(fresh));
     }
 
     // 获取所有文章（按时间倒序）
@@ -90,6 +102,26 @@ public class ArticleServiceImpl implements IArticleService {
             result.add(new ArticleDTO(article));
             
         }
+        return R.success(result);
+    }
+
+    @Override
+    public R<Map<String, Object>> getArticlesPaged(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Article> articlePage = articleRepository.findAll(pageable);
+
+        List<ArticleDTO> articleDTOs = articlePage.getContent().stream()
+                .map(ArticleDTO::new)
+                .toList();
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("articles", articleDTOs);
+        result.put("totalPages", articlePage.getTotalPages());
+        result.put("currentPage", articlePage.getNumber());
+        result.put("totalElements", articlePage.getTotalElements());
+        result.put("hasNext", articlePage.hasNext());
+        result.put("hasPrevious", articlePage.hasPrevious());
+
         return R.success(result);
     }
 }

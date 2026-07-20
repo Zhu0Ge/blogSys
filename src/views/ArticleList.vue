@@ -31,6 +31,26 @@
       </div>
       <p v-if="articles.length === 0" class="empty">No articles yet.</p>
     </div>
+        <!-- 分页控件 -->
+    <div v-if="totalPages > 1" class="pagination">
+      <button 
+        @click="loadArticles(currentPage - 1)" 
+        :disabled="!hasPrevious" 
+        class="page-btn">
+        ← Prev
+      </button>
+      
+      <span class="page-info">
+        Page {{ currentPage + 1 }} / {{ totalPages }} ({{ totalElements }} articles)
+      </span>
+      
+      <button 
+        @click="loadArticles(currentPage + 1)" 
+        :disabled="!hasNext" 
+        class="page-btn">
+        Next →
+      </button>
+    </div>
   </div>
 </template>
 
@@ -42,12 +62,22 @@ import { api } from '../http.js'
 const router = useRouter()
 const username = ref(localStorage.getItem('username') || 'User')
 const articles = ref([])
+const currentPage = ref(0)
+const totalPages = ref(0)
+const totalElements = ref(0)
+const hasNext = ref(false)
+const hasPrevious = ref(false)
+const pageSize = ref(5)
 
 
-const loadArticles = async () => {
-  const data = await api('/api/articles')
-  articles.value = data
-
+const loadArticles = async (page = 0) => {
+  const data = await api(`/api/articles/paged?page=${page}&size=${pageSize.value}`)
+  articles.value = data.articles
+  currentPage.value = data.currentPage
+  totalPages.value = data.totalPages
+  totalElements.value = data.totalElements
+  hasNext.value = data.hasNext
+  hasPrevious.value = data.hasPrevious
 }
 
 onMounted(loadArticles)
@@ -60,7 +90,7 @@ const handleSearch = () => {
   clearTimeout(searchTimer)
   searchTimer = setTimeout(async () => {
     if (!searchQuery.value.trim()) {
-      loadArticles()  // 清空搜索时加载全部
+      loadArticles(0)  // 清空搜索时加载全部
       return
     }
     const data = await api(`/api/articles/search?q=${encodeURIComponent(searchQuery.value)}`)
@@ -101,4 +131,28 @@ const formatDate = (dateStr) => {
 .article-meta { color: #888; font-size: 0.9rem; margin-top: 8px; }
 .profile-btn { background: #555; }
 .empty { text-align: center; color: #999; margin-top: 50px; }
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+.page-btn {
+  padding: 8px 16px;
+  background: #4169E1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.page-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+.page-info {
+  color: #666;
+  font-size: 14px;
+}
 </style>
