@@ -1,0 +1,50 @@
+services:
+  # MySQL 数据库
+  db:
+    image: mysql:8.0
+    container_name: blog-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: user_api
+    ports:
+      - "3307:3306"    # 映射到 3307 避免和本地 MySQL 冲突
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot 后端
+  backend:
+    build: ./user-api-java
+    container_name: blog-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # 用环境变量覆盖 application.properties 中的数据库地址
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/user_api?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update   # Docker 首次启动用 update 自动建表
+      SPRING_JPA_SHOW_SQL: "false"
+      JWT_SECRET: my-secret-key-blog-sys-2026-very-long-and-secure
+    volumes:
+      - uploads-data:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy   # 等待 MySQL 就绪
+
+  # Vue 前端
+  frontend:
+    build: .
+    container_name: blog-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
+  uploads-data:
