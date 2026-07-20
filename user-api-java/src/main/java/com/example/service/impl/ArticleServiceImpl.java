@@ -108,7 +108,7 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     public R<Map<String, Object>> getArticlesPaged(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<Article> articlePage = articleRepository.findAll(pageable);
+        Page<Article> articlePage = articleRepository.findAllBy(pageable);
 
         List<ArticleDTO> articleDTOs = articlePage.getContent().stream()
                 .map(ArticleDTO::new)
