@@ -1,56 +1,38 @@
 <template>
-  <div class="container">
-    <!-- 顶部导航栏 -->
-    <div class="header">
-      <h1>Blog</h1>
-      <div class="search-bar">
-        <input 
-          type="text" 
-          v-model="searchQuery" 
-          placeholder="Search articles..."
-          @input="handleSearch"
-        >
+  <div class="container py-4">
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand navbar-light bg-white shadow-sm rounded mb-4 px-3">
+      <span class="navbar-brand mb-0 h1">Blog</span>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <input class="form-control form-control-sm" type="text" v-model="searchQuery" @input="handleSearch" placeholder="Search..." style="width: 200px;">
+        <span class="text-muted small">Welcome, {{ username }}</span>
+        <router-link to="/profile" class="btn btn-outline-secondary btn-sm">Profile</router-link>
+        <router-link to="/articles/new" class="btn btn-primary btn-sm">Write</router-link>
+        <button @click="handleLogout" class="btn btn-outline-danger btn-sm">Logout</button>
       </div>
-      <div class="header-right">
-        <span>Welcome, {{ username }}</span>
-        <router-link to="/profile" class="btn profile-btn">Profile</router-link>
-        <router-link to="/articles/new" class="btn">Write</router-link>
-        <button @click="handleLogout" class="btn logout">Logout</button>
-      </div>
-    </div>
+    </nav>
 
-    <!-- 文章列表 -->
-    <div class="articles">
-      <div v-for="article in articles" :key="article.id" class="article-card">
-        <router-link :to="`/articles/${article.id}`" class="article-title">
-          {{ article.title }}
-        </router-link>
-        <p class="article-meta">
-          By {{ article.username || 'Unknown' }} · {{ formatDate(article.createdAt) }}
-        </p>
+    <!-- 文章卡片列表 -->
+    <div v-for="article in articles" :key="article.id" class="card shadow-sm mb-3">
+      <div class="card-body">
+        <router-link :to="`/articles/${article.id}`" class="card-title h5 text-decoration-none">{{ article.title }}</router-link>
+        <p class="card-text small text-muted mt-2">By {{ article.username || 'Unknown' }} · {{ formatDate(article.createdAt) }}</p>
       </div>
-      <p v-if="articles.length === 0" class="empty">No articles yet.</p>
     </div>
-        <!-- 分页控件 -->
-    <div v-if="totalPages > 1" class="pagination">
-      <button 
-        @click="loadArticles(currentPage - 1)" 
-        :disabled="!hasPrevious" 
-        class="page-btn">
-        ← Prev
-      </button>
-      
-      <span class="page-info">
-        Page {{ currentPage + 1 }} / {{ totalPages }} ({{ totalElements }} articles)
-      </span>
-      
-      <button 
-        @click="loadArticles(currentPage + 1)" 
-        :disabled="!hasNext" 
-        class="page-btn">
-        Next →
-      </button>
-    </div>
+    <p v-if="articles.length === 0" class="text-center text-muted py-5">No articles yet.</p>
+
+    <!-- 分页 -->
+    <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-4">
+      <ul class="pagination">
+        <li class="page-item" :class="{ disabled: !hasPrevious }">
+          <button class="page-link" @click="loadArticles(currentPage - 1)">← Prev</button>
+        </li>
+        <li class="page-item disabled"><span class="page-link">Page {{ currentPage + 1 }} / {{ totalPages }}</span></li>
+        <li class="page-item" :class="{ disabled: !hasNext }">
+          <button class="page-link" @click="loadArticles(currentPage + 1)">Next →</button>
+        </li>
+      </ul>
+    </nav>
   </div>
 </template>
 
@@ -113,7 +95,7 @@ const formatDate = (dateStr) => {
 </script>
 
 <style scoped>
-.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+/* .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .header-right { display: flex; align-items: center; gap: 15px; }
 .btn {
@@ -154,5 +136,5 @@ const formatDate = (dateStr) => {
 .page-info {
   color: #666;
   font-size: 14px;
-}
+} */
 </style>

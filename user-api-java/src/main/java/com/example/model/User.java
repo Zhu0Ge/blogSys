@@ -26,6 +26,9 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String bio;     // 个人简介
 
+    @Column(length = 100)
+    private String githubId;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -64,4 +67,7 @@ public class User {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+    
+    public String getGithubId() { return githubId; }
+    public void setGithubId(String githubId) { this.githubId = githubId; }
 }

@@ -1,0 +1,50 @@
+{
+  "全量接口" : {
+    "transaction" : "全量接口",
+    "sampleCount" : 500,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 540.2219999999998,
+    "medianResTime" : 557.0,
+    "minResTime" : 70.0,
+    "maxResTime" : 1381.0,
+    "pct1ResTime" : 862.8000000000001,
+    "pct2ResTime" : 918.75,
+    "pct3ResTime" : 1024.88,
+    "throughput" : 36.200405444540976,
+    "receivedKBytesPerSec" : 60537.54208297133,
+    "sentKBytesPerSec" : 12.373185454677094
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 1000,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 469.0850000000002,
+    "medianResTime" : 466.5,
+    "minResTime" : 32.0,
+    "maxResTime" : 1381.0,
+    "pct1ResTime" : 769.8,
+    "pct2ResTime" : 865.8499999999998,
+    "pct3ResTime" : 982.99,
+    "throughput" : 71.9527989638797,
+    "receivedKBytesPerSec" : 60285.062374082605,
+    "sentKBytesPerSec" : 25.331039088358036
+  },
+  "分页接口" : {
+    "transaction" : "分页接口",
+    "sampleCount" : 500,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 397.94800000000015,
+    "medianResTime" : 420.0,
+    "minResTime" : 32.0,
+    "maxResTime" : 970.0,
+    "pct1ResTime" : 618.9000000000001,
+    "pct2ResTime" : 654.95,
+    "pct3ResTime" : 744.8300000000002,
+    "throughput" : 36.158518947063925,
+    "receivedKBytesPerSec" : 122.7412225195256,
+    "sentKBytesPerSec" : 13.100400907578827
+  }
+}

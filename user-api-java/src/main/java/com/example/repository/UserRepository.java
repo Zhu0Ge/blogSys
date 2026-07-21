@@ -11,4 +11,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     // 按邮箱查找
     Optional<User> findByEmail(String email);
+
+    // 按 GitHub ID 查找
+    Optional<User> findByGithubId(String githubId);
 }

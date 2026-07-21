@@ -32,5 +32,5 @@ export async function api(url, options = {}) {
   if(body.code == 200){
     return body.data
   }
-  throw new Error(body.msg || 'Request failed')
+  throw new Error(body.message || 'Request failed')
 }

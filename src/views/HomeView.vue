@@ -40,7 +40,7 @@ const handleLogout = () => {
 </script>
 
 <style scoped>
-.home-container {
+/* .home-container {
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -73,5 +73,5 @@ h1 {
 
 .logout-btn:hover {
   background: #3154b3;
-}
+} */
 </style>

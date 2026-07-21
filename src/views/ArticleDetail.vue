@@ -1,41 +1,38 @@
 <template>
-  <div class="container">
-    <!-- 顶部 -->
-    <div class="header">
-      <router-link to="/" class="back-link">← Back</router-link>
-      <div v-if="isAuthor" class="header-actions">
-        <router-link :to="`/articles/${article.id}/edit`" class="btn">Edit</router-link>
-        <button @click="handleDelete" class="btn danger">Delete</button>
+  <div class="container py-4" style="max-width: 800px;">
+    <!-- 顶部导航 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <router-link to="/" class="btn btn-outline-secondary btn-sm">← Back</router-link>
+      <div v-if="isAuthor" class="d-flex gap-2">
+        <router-link :to="`/articles/${article.id}/edit`" class="btn btn-primary btn-sm">Edit</router-link>
+        <button @click="handleDelete" class="btn btn-danger btn-sm">Delete</button>
       </div>
     </div>
 
     <!-- 文章内容 -->
-    <div v-if="article" class="article">
-      <h1>{{ article.title }}</h1>
-      <p class="meta">{{ formatDate(article.createdAt) }}</p>
-      <div class="content">{{ article.content }}</div>
+    <div v-if="article" class="mb-5">
+      <h1 class="mb-3">{{ article.title }}</h1>
+      <p class="text-muted small">{{ formatDate(article.createdAt) }}</p>
+      <p class="mt-4" style="line-height: 1.8; white-space: pre-wrap;">{{ article.content }}</p>
     </div>
-    <p v-else class="loading">Loading...</p>
+    <p v-else class="text-center text-muted py-5">Loading...</p>
 
     <!-- 评论区 -->
-    <div class="comments-section">
-      <h2>Comments ({{ comments.length }})</h2>
+    <div class="border-top pt-4">
+      <h5 class="mb-3">Comments ({{ comments.length }})</h5>
 
-      <!-- 发表评论 -->
-      <div class="comment-form">
-        <textarea v-model="newComment" placeholder="Write a comment..." rows="3"></textarea>
-        <button @click="handleAddComment(null)" class="btn" :disabled="!newComment.trim()">Post</button>
+      <div class="d-flex gap-2 mb-4">
+        <textarea v-model="newComment" class="form-control" placeholder="Write a comment..." rows="2"></textarea>
+        <button @click="handleAddComment(null)" class="btn btn-primary btn-sm align-self-start" :disabled="!newComment.trim()">Post</button>
       </div>
 
-      <!-- 评论列表（递归组件） -->
       <CommentItem
         v-for="comment in comments"
         :key="comment.id"
         :comment="comment"
-        class="comment"
         @reply="handleAddComment"
       />
-      <p v-if="comments.length === 0" class="empty">No comments yet.</p>
+      <p v-if="comments.length === 0" class="text-center text-muted py-3">No comments yet.</p>
     </div>
   </div>
 </template>
@@ -114,7 +111,7 @@ const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
 </script>
 
 <style scoped>
-.container { max-width: 800px; margin: 0 auto; padding: 20px; }
+/* .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .back-link { color: #4169E1; text-decoration: none; }
 .header-actions { display: flex; gap: 10px; }
@@ -132,5 +129,5 @@ const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
 .comment { padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
 .comment-text { margin-bottom: 5px; }
 .comment-meta { color: #999; font-size: 0.8rem; }
-.empty, .loading { text-align: center; color: #999; margin-top: 30px; }
+.empty, .loading { text-align: center; color: #999; margin-top: 30px; } */
 </style>

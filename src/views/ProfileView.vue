@@ -1,48 +1,43 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <h1>Profile</h1>
-      <router-link to="/" class="back-link">← Back</router-link>
+  <div class="container py-4" style="max-width: 600px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3>Profile</h3>
+      <router-link to="/" class="btn btn-outline-secondary btn-sm">← Back</router-link>
     </div>
 
-    <div class="profile-card">
-      <div class="avatar-section">
-        <!-- 点击头像触发隐藏的文件选择框 -->
-        <div class="avatar" @click="$refs.fileInput.click()">
-            <img v-if="avatar" :src="avatar" alt="avatar">
-            <span v-else class="avatar-placeholder">{{ username[0]?.toUpperCase() }}</span>
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <!-- 头像 -->
+        <div class="text-center mb-4">
+          <div class="rounded-circle overflow-hidden mx-auto d-flex align-items-center justify-content-center bg-primary"
+               style="width: 100px; height: 100px; cursor: pointer;"
+               @click="$refs.fileInput.click()">
+            <img v-if="avatar" :src="avatar" style="width:100%;height:100%;object-fit:cover;" alt="avatar">
+            <span v-else class="text-white" style="font-size: 2.5rem; font-weight: bold;">{{ username[0]?.toUpperCase() }}</span>
+          </div>
+          <small class="text-muted">Click to change avatar</small>
+          <input type="file" ref="fileInput" accept="image/*" style="display:none" @change="handleFileUpload">
+          <p v-if="uploading" class="text-info small mt-1">Uploading...</p>
         </div>
-        <p class="hint">Click to change avatar</p>
-        <!-- 隐藏的文件选择框 -->
-        <input 
-            type="file" 
-            ref="fileInput" 
-            accept="image/*"
-            style="display: none"
-            @change="handleFileUpload"
-        >
-        <!-- 上传进度提示 -->
-        <p v-if="uploading" class="hint">Uploading...</p>
-      </div>
 
-      <div class="info-section">
-        <div class="field">
-          <label>Username</label>
-          <p class="value">{{ username }}</p>
+        <!-- 信息 -->
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <p class="form-control-plaintext">{{ username }}</p>
         </div>
-        <div class="field">
-          <label>Email</label>
-          <p class="value">{{ email }}</p>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <p class="form-control-plaintext">{{ email }}</p>
         </div>
-        <div class="field">
-          <label>Avatar URL</label>
-          <input type="text" v-model="avatarInput" placeholder="Paste image URL...">
+        <div class="mb-3">
+          <label class="form-label">Avatar URL</label>
+          <input type="text" class="form-control" v-model="avatarInput" placeholder="Paste image URL...">
         </div>
-        <div class="field">
-          <label>Bio</label>
-          <textarea v-model="bio" placeholder="Write something about yourself..." rows="4"></textarea>
+        <div class="mb-3">
+          <label class="form-label">Bio</label>
+          <textarea class="form-control" v-model="bio" placeholder="Write something about yourself..." rows="3"></textarea>
         </div>
-        <button @click="handleSave" class="btn" :disabled="saving">
+        <button @click="handleSave" class="btn btn-primary w-100" :disabled="saving">
           {{ saving ? 'Saving...' : 'Save' }}
         </button>
       </div>
@@ -121,7 +116,7 @@ const handleFileUpload = async (e) => {
 </script>
 
 <style scoped>
-.container { max-width: 600px; margin: 0 auto; padding: 20px; }
+/* .container { max-width: 600px; margin: 0 auto; padding: 20px; }
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
 .back-link { color: #4169E1; text-decoration: none; }
 .profile-card { background: #f9f9f9; border-radius: 12px; padding: 30px; }
@@ -145,5 +140,5 @@ input, textarea {
   width: 100%; padding: 12px; background: #4169E1; color: white;
   border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;
 }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; } */
 </style>

@@ -1,22 +1,20 @@
 <template>
-  <div class="comment-item">
-    <div class="comment-main">
-      <p class="comment-text">{{ comment.content }}</p>
-      <p class="comment-meta">
+  <div class="mb-2">
+    <div class="bg-light rounded p-2">
+      <p class="mb-1 small">{{ comment.content }}</p>
+      <p class="mb-0 text-muted" style="font-size: 0.8rem;">
         {{ comment.username }} · {{ formatDate(comment.createdAt) }}
-        <button @click="toggleReply" class="link-btn">Reply</button>
-        <button v-if="comment.replies?.length" @click="toggleCollapse" class="link-btn">
+        <button @click="toggleReply" class="btn btn-link btn-sm p-0 ms-2 text-decoration-none">Reply</button>
+        <button v-if="comment.replies?.length" @click="toggleCollapse" class="btn btn-link btn-sm p-0 ms-2 text-decoration-none">
           {{ collapsed ? `+ Expand (${comment.replies.length})` : `− Collapse` }}
         </button>
       </p>
-      <!-- 回复输入框 -->
-      <div v-if="showReplyInput" class="reply-form">
-        <textarea v-model="replyContent" placeholder="Write a reply..." rows="2"></textarea>
-        <button @click="submitReply" class="btn btn-sm" :disabled="!replyContent.trim()">Reply</button>
+      <div v-if="showReplyInput" class="d-flex gap-2 mt-2">
+        <textarea v-model="replyContent" class="form-control form-control-sm" placeholder="Write a reply..." rows="1"></textarea>
+        <button @click="submitReply" class="btn btn-primary btn-sm" :disabled="!replyContent.trim()">Reply</button>
       </div>
     </div>
-    <!-- 回复列表 -->
-    <div v-if="!collapsed && comment.replies?.length" class="replies">
+    <div v-if="!collapsed && comment.replies?.length" class="ms-4 mt-1 border-start ps-3">
       <CommentItem
         v-for="reply in comment.replies"
         :key="reply.id"
@@ -51,7 +49,7 @@ const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
 </script>
 
 <style scoped>
-.comment-item { margin-bottom: 12px; }
+/* .comment-item { margin-bottom: 12px; }
 .comment-main { padding: 10px 12px; background: #f9f9f9; border-radius: 8px; }
 .comment-text { margin-bottom: 4px; }
 .comment-meta { color: #999; font-size: 0.8rem; }
@@ -60,5 +58,5 @@ const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString()
 .reply-form { margin-top: 8px; display: flex; gap: 8px; }
 .reply-form textarea { flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 6px; resize: vertical; font-family: inherit; font-size: 0.9rem; }
 .btn-sm { padding: 4px 12px; font-size: 0.8rem; }
-.replies { margin-left: 24px; margin-top: 8px; border-left: 2px solid #e0e0e0; padding-left: 12px; }
+.replies { margin-left: 24px; margin-top: 8px; border-left: 2px solid #e0e0e0; padding-left: 12px; } */
 </style>
