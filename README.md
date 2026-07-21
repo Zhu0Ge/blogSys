@@ -53,6 +53,47 @@
 | SQL 查询次数 | 5 次（1+4） | **1 次 JOIN** |
 | 响应时间（10并发） | 85ms | **24ms** |
 
+### 数据库索引优化
+
+通过 `EXPLAIN` 分析查询计划，为 `created_at` 字段添加索引前后的对比：
+
+**加索引前——全量查询：**
+```sql
+EXPLAIN SELECT * FROM articles ORDER BY created_at DESC;
+```
+![全表扫描](docs/images/explain-before-full.png)
+- `type = ALL` → 全表扫描
+- `rows = 5075` → 扫描所有行
+- `Extra = Using filesort` → 文件排序
+
+**加索引前——分页查询（即使有 LIMIT，仍未走索引）：**
+```sql
+EXPLAIN SELECT * FROM articles ORDER BY created_at DESC LIMIT 10;
+```
+![分页全表扫描](docs/images/explain-before-paged.png)
+- 同样 `type = ALL`，`rows = 5075`
+
+**添加索引：**
+```sql
+ALTER TABLE articles ADD INDEX idx_created_at (created_at DESC);
+```
+
+**加索引后——分页查询：**
+```sql
+EXPLAIN SELECT * FROM articles ORDER BY created_at DESC LIMIT 10;
+```
+![索引扫描](docs/images/explain-after-index.png)
+- `type = index` → 索引扫描
+- `key = idx_created_at` → 使用了索引
+- `rows = 10` → 仅扫描 10 行（索引直接定位）
+- `Extra = NULL` → 无需文件排序（索引自带顺序）
+
+| 指标 | 加索引前 | 加索引后 | 提升 |
+|------|---------|---------|------|
+| 扫描行数 | 5075 | **10** | **减少 99.8%** |
+| 访问类型 | ALL 全表扫描 | **index 索引扫描** | 质的提升 |
+| 额外排序 | Using filesort | **无** | 消除排序开销 |
+
 ### 单元测试覆盖率
 
 ```
