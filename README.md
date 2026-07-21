@@ -1,3 +1,4 @@
+[![Java CI with Maven](https://github.com/Zhu0Ge/blogSys/actions/workflows/maven.yml/badge.svg)](https://github.com/Zhu0Ge/blogSys/actions/workflows/maven.yml)
 The completed result diagram is shown below  
 Some of the code is sample  
 完成结果图如下  
