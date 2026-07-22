@@ -94,6 +94,36 @@ EXPLAIN SELECT * FROM articles ORDER BY created_at DESC LIMIT 10;
 | 访问类型 | ALL 全表扫描 | **index 索引扫描** | 质的提升 |
 | 额外排序 | Using filesort | **无** | 消除排序开销 |
 
+### 全文搜索优化
+
+文章搜索使用 `LIKE '%keyword%'` 会导致全表扫描，通过 MySQL FULLTEXT 索引优化：
+
+**不加全文索引——LIKE 搜索结果：**
+![LIKE 搜索结果](docs/images/search-like.png)
+
+**加全文索引后——FULLTEXT 搜索结果：**
+![FULLTEXT 搜索结果](docs/images/search-fulltext.png)
+
+**不加全文索引——LIKE 查询执行计划：**
+```sql
+EXPLAIN SELECT * FROM articles WHERE title LIKE '%spring%';
+```
+![LIKE 全表扫描](docs/images/explain-like.png)
+
+**对比——加全文索引后：**
+```sql
+ALTER TABLE articles ADD FULLTEXT INDEX ft_title (title);
+EXPLAIN SELECT * FROM articles WHERE MATCH(title) AGAINST('+spring*' IN BOOLEAN MODE);
+```
+![FULLTEXT 索引扫描](docs/images/explain-fulltext.png)
+
+| 指标 | LIKE '%keyword%' | FULLTEXT 索引 |
+|------|-----------------|---------------|
+| 扫描行数 | ~5000 行 | **~10 行** |
+| 访问类型 | ALL 全表扫描 | **fulltext 索引查找** |
+| 大数据量性能 | 线性下降 | **保持稳定** |
+| 匹配方式 | 模糊子串匹配 | **分词+相关性排序** |
+
 ### 单元测试覆盖率
 
 ```

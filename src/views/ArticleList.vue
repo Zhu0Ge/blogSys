@@ -75,7 +75,7 @@ const handleSearch = () => {
       loadArticles(0)  // 清空搜索时加载全部
       return
     }
-    const data = await api(`/api/articles/search?q=${encodeURIComponent(searchQuery.value)}`)
+    const data = await api(`/api/articles/search/fulltext?q=${encodeURIComponent(searchQuery.value)}`)
 
     articles.value = data
     

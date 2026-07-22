@@ -26,6 +26,9 @@ public interface IArticleService {
     // 搜索文章（按标题模糊匹配）
     R<List<ArticleDTO>> searchArticles(String keyword);
 
+    // 全文搜索文章
+    R<List<ArticleDTO>> searchArticlesFulltext(String keyword);
+
     // 分页查询文章（按时间倒序）
     R<Map<String, Object>> getArticlesPaged(int page, int size);
 }

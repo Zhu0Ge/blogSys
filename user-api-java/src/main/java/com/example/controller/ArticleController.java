@@ -47,6 +47,12 @@ public class ArticleController {
         return articleService.searchArticles(q);
     }
 
+    // 全文搜索文章
+    @GetMapping("/search/fulltext")
+    public R<List<ArticleDTO>> searchArticlesFulltext(@RequestParam String q) {
+        return articleService.searchArticlesFulltext(q);
+    }
+
     // 获取单篇文章
     @GetMapping("/{id}")
     public R<ArticleDTO> getArticle(@PathVariable Integer id) {

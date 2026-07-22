@@ -13,17 +13,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 
 @Service
 public class ArticleServiceImpl implements IArticleService {
 
     private final ArticleRepository articleRepository;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
-    public ArticleServiceImpl(ArticleRepository articleRepository) {
+    public ArticleServiceImpl(ArticleRepository articleRepository, org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         this.articleRepository = articleRepository;
-
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     // 创建文章
@@ -102,6 +106,31 @@ public class ArticleServiceImpl implements IArticleService {
             result.add(new ArticleDTO(article));
             
         }
+        return R.success(result);
+    }
+
+    @Override
+    public R<List<ArticleDTO>> searchArticlesFulltext(String keyword) {
+        String formatted = Arrays.stream(keyword.split("\\s+"))
+            .filter(w -> !w.isBlank())
+            .map(w -> "+" + w + "*")
+            .collect(Collectors.joining(" "));
+
+        String sql = "SELECT a.id, a.title, a.content, a.created_at, u.username " +
+                     "FROM articles a LEFT JOIN users u ON a.user_id = u.id " +
+                     "WHERE MATCH(a.title) AGAINST(? IN BOOLEAN MODE) " +
+                     "ORDER BY a.created_at DESC LIMIT 50";
+
+        List<ArticleDTO> result = jdbcTemplate.query(sql, new Object[]{formatted}, (rs, rowNum) -> {
+            ArticleDTO dto = new ArticleDTO();
+            dto.setId(rs.getInt("id"));
+            dto.setTitle(rs.getString("title"));
+            dto.setContent(rs.getString("content"));
+            dto.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            dto.setUsername(rs.getString("username"));
+            return dto;
+        });
+
         return R.success(result);
     }
 

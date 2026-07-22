@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
     // 按用户 ID 查所有文章
     @EntityGraph(attributePaths = {"user"})
