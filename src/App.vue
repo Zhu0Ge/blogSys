@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-view :searchResults="searchResults" @clearSearch="searchResults = null"></router-view>
-    <ChatBox @search-results="handleSearchResults" />
+    <ChatBox :key="$route.fullPath" @search-results="handleSearchResults" />
   </div>
 </template>
 

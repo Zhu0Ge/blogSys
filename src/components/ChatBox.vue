@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isLoggedIn">
     <!-- 聊天按钮 -->
     <button v-if="!showChat" @click="showChat = true" 
             class="btn btn-primary rounded-circle shadow position-fixed d-flex align-items-center justify-content-center"
@@ -37,8 +37,10 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { api } from '../http.js'
+
+const isLoggedIn = computed(() => !!localStorage.getItem('token'))
 
 const emit = defineEmits(['search-results'])
 const showChat = ref(false)

@@ -1,10 +1,19 @@
-# Blog System - 博客系统
+# BlogSys - 博客系统
 
 [![CI](https://github.com/Zhu0Ge/blogSys/actions/workflows/maven.yml/badge.svg)](https://github.com/Zhu0Ge/blogSys/actions/workflows/maven.yml)
 
-基于 Spring Boot 3.4 + Vue 3 的前后端分离博客系统，支持用户认证、文章管理、评论互动、个人主页等功能。
+基于 Spring Boot 3.4 + Vue 3 的前后端分离博客系统，支持用户认证、文章管理、评论互动、个人主页、GitHub OAuth 登录、AI 智能问答等功能。
 
 ---
+
+## 项目截图
+
+| 页面 | 截图 |
+|------|------|
+| 登录/注册页 | ![登录页](docs/images/screenshot-login.png) |
+| 文章列表 | ![文章列表](docs/images/screenshot-articles.png) |
+| AI 助手对话 | ![AI 助手演示](docs/images/ai-search-demo.gif) |
+| 文章详情 & 评论 | ![文章详情](docs/images/screenshot-detail.png) |
 
 ## 技术栈
 
@@ -12,24 +21,43 @@
 |------|------|
 | 后端框架 | Spring Boot 3.4, Spring Data JPA, Spring Security |
 | 数据库 | MySQL 8.0, H2（测试环境） |
-| 认证 | JWT（jjwt 0.12） |
-| 前端 | Vue 3 (Composition API), Vue Router 4, Vite 5 |
-| 部署 | Docker Compose（MySQL + 后端 + 前端） |
-| CI/CD | GitHub Actions（自动构建 + 测试 + 覆盖率报告） |
-| 测试 | JUnit 5, Mockito, JaCoCo |
+| 认证 | JWT（jjwt 0.12）, GitHub OAuth 2.0 |
+| AI | DeepSeek API（RAG 检索增强生成） |
+| 前端 | Vue 3 (Composition API), Bootstrap 5, Vite 5 |
+| 部署 | Docker Compose（MySQL + 后端 + 前端 + Redis） |
+| CI/CD | GitHub Actions（自动构建 + 测试 + JaCoCo 覆盖率报告） |
+| 测试 | JUnit 5, Mockito, JaCoCo（18 个测试用例） |
+| 压测 | JMeter 5.6.3 |
 
 ---
 
 ## 功能特性
 
+### 核心功能
+
 - [x] 用户注册 / 登录（JWT 认证）
 - [x] 文章 CRUD（仅作者可编辑/删除）
 - [x] 文章分页查询（Spring Data Pageable）
-- [x] 文章搜索（标题模糊匹配 + 300ms 防抖）
+- [x] 文章搜索（MySQL FULLTEXT 全文索引）
 - [x] 评论系统（树形结构 + 折叠展开）
 - [x] 个人主页（头像上传 + 个人简介）
-- [x] 统一异常处理 + 参数校验
-- [x] Docker 一键部署
+- [x] 统一异常处理 + Jakarta Validation 参数校验
+
+### 高级特性
+
+- [x] **GitHub OAuth 2.0 第三方登录** — 完整授权码流程
+- [x] **AI 博客助手**（RAG 模式）— 智能搜索文章 + 生成回答
+- [x] **Docker 一键部署** — MySQL + 后端 + 前端容器化编排
+
+### 工程化
+
+- [x] 分页查询 + JMeter 性能压测（量化报告）
+- [x] @EntityGraph 消除 N+1 查询
+- [x] MySQL EXPLAIN 索引分析与优化
+- [x] FULLTEXT 全文索引替代 LIKE 模糊搜索
+- [x] 单元测试 + JaCoCo 覆盖率统计（18 个测试用例）
+- [x] GitHub Actions CI 自动化流水线
+- [x] Bootstrap 5 响应式UI
 
 ---
 
@@ -124,6 +152,30 @@ EXPLAIN SELECT * FROM articles WHERE MATCH(title) AGAINST('+spring*' IN BOOLEAN 
 | 大数据量性能 | 线性下降 | **保持稳定** |
 | 匹配方式 | 模糊子串匹配 | **分词+相关性排序** |
 
+### AI 博客助手（RAG 模式）
+
+集成 DeepSeek API，采用两阶段 Agent 架构：
+
+```
+用户提问 "帮我找关于Spring的文章"
+  ↓
+阶段1：AI 判断意图 → SEARCH:Spring
+  ↓
+阶段2：FULLTEXT 搜索文章 → 拼入上下文 → DeepSeek 生成回答
+  ↓
+前端：聊天框显示回答 + 文章列表自动更新为搜索结果
+```
+
+**支持的交互场景：**
+
+| 场景 | 示例 | AI 行为 |
+|------|------|---------|
+| 搜索文章 | "帮我找关于JWT的文章" | 搜索 → 显示文章列表 + 总结 |
+| 总结内容 | "总结所有关于缓存的内容" | 搜索 → 汇总回答 |
+| 知识问答 | "@EntityGraph是什么" | 搜索 → 基于文章回答 |
+| 通用聊天 | "你是谁"、"你好" | 直接回答，不搜索 |
+| 内容创作 | "帮我写一篇Spring入门文章" | 直接创作 |
+
 ### 单元测试覆盖率
 
 ```
@@ -208,9 +260,12 @@ blogSys/
 | PUT | /api/articles/{id} | 更新文章（仅作者） | ✅ |
 | DELETE | /api/articles/{id} | 删除文章（仅作者） | ✅ |
 | GET | /api/articles/search?q= | 搜索文章 | ✅ |
+| GET | /api/articles/search/fulltext?q= | **全文搜索** | ✅ |
 | GET | /api/articles/{id}/comments | 文章评论 | ✅ |
 | POST | /api/comments | 发表评论 | ✅ |
 | DELETE | /api/comments/{id} | 删除评论（仅作者） | ✅ |
 | GET | /api/users/{id} | 用户信息 | ✅ |
 | PUT | /api/users/profile | 更新个人资料 | ✅ |
 | POST | /api/upload/avatar | 上传头像 | ✅ |
+| GET | /api/oauth/github/authorize | **GitHub 登录授权** | ❌ |
+| POST | /api/chat | **AI 助手对话** | ✅ |
