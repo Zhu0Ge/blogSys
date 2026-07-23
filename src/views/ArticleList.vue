@@ -51,8 +51,22 @@ const hasNext = ref(false)
 const hasPrevious = ref(false)
 const pageSize = ref(5)
 
+const props = defineProps({
+  searchResults: {
+    type: Array,
+    default: null
+  }
+})
 
 const loadArticles = async (page = 0) => {
+  // 如果有搜索结果显示搜索结果
+  if (props.searchResults) {
+    articles.value = props.searchResults
+    totalPages.value = 1
+    hasNext.value = false
+    hasPrevious.value = false
+    return
+  }
   const data = await api(`/api/articles/paged?page=${page}&size=${pageSize.value}`)
   articles.value = data.articles
   currentPage.value = data.currentPage
@@ -63,7 +77,19 @@ const loadArticles = async (page = 0) => {
 }
 
 onMounted(loadArticles)
+// 监听 searchResults 变化
+import { watch } from 'vue'
+watch(() => props.searchResults, () => {
+  loadArticles(0)
+})
 
+// 添加清除搜索的方法
+const clearSearch = () => {
+  if (props.searchResults) {
+    // 可以触发父组件清除
+    loadArticles(0)
+  }
+}
 
 const searchQuery = ref('')
 let searchTimer = null

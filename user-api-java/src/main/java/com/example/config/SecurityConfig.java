@@ -26,8 +26,7 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))  // 无状态
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // 放行预检请求
-                .requestMatchers("/api/login", "/api/register", "/api/oauth/**").permitAll()  // 登录注册不需要认证
-                .requestMatchers("/api/upload/avatar/**").permitAll()  // 头像图片不需要认证
+                .requestMatchers("/api/login", "/api/register", "/api/oauth/**", "/api/upload/avatar/**", "/api/chat/**").permitAll()
                 .anyRequest().authenticated()  // 其他所有接口需要 token
             )
             .exceptionHandling(exceptions -> exceptions
